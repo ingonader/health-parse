@@ -32,6 +32,8 @@
 ## build package tskeyvalparser
 ## ============================================================================
 
+## [[to do]] move to helper code file in tskeyvalparser project
+
 # devtools::setup("/Users/ingonader/Dropbox/lists/health-parse/tskeyvalparser")
 # usethis::use_mit_license("Ingo Nader")
 # usethis::use_package("magrittr", "Suggests")
@@ -64,6 +66,8 @@ devtools::install()
 ## ============================================================================
 ## load packages
 ## ============================================================================
+
+# devtools::install_github("ingonader/tskeyvalparser")
 
 ## [[to do]]
 ## * use packrat, checkpoint,  or some other solution.
