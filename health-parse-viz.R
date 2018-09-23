@@ -107,6 +107,10 @@ head(dat_long_num)
 tail(dat_long_num)
 str(dat_long_num)
 
+## ------------------------------------------------------------------------- ##
+## function to add events to different plots ####
+## ------------------------------------------------------------------------- ##
+
 ## [[here]]
 ## * adjust scales: show only month and not 1970
 ## * add full plot (without facets)
@@ -138,6 +142,14 @@ add_events <- function(plot, eventdata, ypos, xpos = "rel") {
   return(plot)
 }
 
+## ========================================================================= ##
+## plot all data ####
+## ========================================================================= ##
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## weight (all data)
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
 ## try a plot:
 p <- ggplot(dat_wide, aes(x = datetime_rel, y = weight)) +
   geom_point(alpha = .6) +
@@ -152,6 +164,20 @@ p <- ggplot(dat_wide, aes(x = datetime_rel, y = weight)) +
 p %<>% add_events(dat_wide_eventonly, ypos = "weight_min", xpos = "rel")
 p
 
+## [[here]]
+## save plot to dropbox (in dropbox directory):
+ggsave(file.path(path$dat, "weight-all.jpg"), 
+       width = 5, height = 10, unit = "in", dpi = 300)
+
+
+## [[to do]]
+## * add path$out to get_paths() function in tskeyvalparser package
+## * move plot to output directory
+## * change plot to have ncol = 1
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## bodyfat (all data) ####
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
 # bodyfat trial:
 p <- ggplot(dat_wide, aes(x = datetime_rel, y = bodyfat)) +
@@ -168,6 +194,10 @@ p %<>% add_events(dat_wide_eventonly, ypos ="bodyfat_min", xpos = "rel")
 p
 
 dat_wide %>% dplyr::select(datetime, weight, bodyfat) %>% tail(n = 20)
+
+## ========================================================================= ##
+## plot subsets of data
+## ========================================================================= ##
 
 ## Plot for 12 + 2 months
 
