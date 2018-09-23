@@ -7,6 +7,10 @@
 
 ## [[to do]]
 ## * Make shiny app and host it on shiny.io (+ grab file from dropbox via R?) or on azure?
+## * use age at the time of the event for calculation of body fat
+## * export resulting plots and data: to dropbox?
+## * use packrat
+## * make interactive plots (e.g., plotly?)
 
 ## ============================================================================
 ## load packages
@@ -33,16 +37,11 @@ library(tskeyvalparser)
 
 options(tibble.width = Inf)
 
-## ========================================================================== ##
-## function definitions
-## ========================================================================== ##
-
-#source("/Users/ingonader/Dropbox/lists/health-parse/health-parse-functions.R")
-
 ## ============================================================================
 ## analysis
 ## ============================================================================
 
+## get paths:
 path <- get_paths()
 current_age <- floor(as.numeric(difftime(now(), as.Date("1978-10-19"), units = "days") / 365.242))
 ## [[to do]]
@@ -245,8 +244,6 @@ p <- dat_caliper %>%
 #p %<>% add_events(dat_long_14, ypos = "weight_min", xpos = "abs")
 p
 
-## [[to do]]
-## write tests
 
 
 
