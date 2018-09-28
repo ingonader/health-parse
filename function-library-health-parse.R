@@ -20,7 +20,7 @@ get_paths <- function() {
   ## get dropbox path relative to current user:
   path$base <- file.path(
     Sys.getenv("HOME"),   ## home dir of current user
-    "Dropbox/lists"       ## Dropbox directory
+    "Dropbox/health"       ## Dropbox directory
   )
   ## define script and data paths relative to raw path:
   ## (currently not used)

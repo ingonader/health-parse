@@ -170,9 +170,8 @@ p <- ggplot(dat_wide, aes(x = datetime_rel, y = weight)) +
 p %<>% add_events(dat_wide_eventonly, ypos = "weight_min", xpos = "rel")
 p
 
-## [[here]]
 ## save plot to dropbox (in dropbox directory):
-ggsave(file.path(path$dat, "weight-all.jpg"), 
+ggsave(file.path(path$out, "weight-all.jpg"), 
        width = 5, height = 10, unit = "in", dpi = 300)
 
 
