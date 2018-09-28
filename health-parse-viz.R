@@ -96,10 +96,14 @@ dat_wide %>% dplyr::select(-orig) %>% tail()
 
 ## create a version of only events with appropriate y (weight) values for plotting labels:
 dat_wide_eventonly <- dat_wide %>%
-  dplyr::filter(event != "") %>%
   dplyr::mutate(
     weight_min = min(weight, na.rm = TRUE),
-    bodyfat_min = min(bodyfat, na.rm = TRUE))
+    bodyfat_min = min(bodyfat, na.rm = TRUE),
+    caliper_min = min(c(caliper_brust_li, caliper_brust_re,
+                        caliper_bauch_li, caliper_bauch_re,
+                        caliper_bein_li, caliper_bein_re), na.rm = TRUE)) %>%
+  dplyr::filter(event != "")
+  
 
 names(dat_wide)
 tail(dat_wide)
