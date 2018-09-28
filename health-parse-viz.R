@@ -63,8 +63,6 @@ dat_txt <- read_healthfiles(
 ## remove comments:
 dat_txt <- remove_comments(dat_txt)
 
-#dat_txt <- dat_txt[-(383:385)]
-
 
 ## construct wide table for specific keys:
 dat_wide <- tibble::tibble(
@@ -93,8 +91,8 @@ dat_wide %<>%
   )
 year(dat_wide$datetime_rel) <- 1970
 
-head(dat_wide)
-dat_wide %>% dplyr::select(-orig) %>% tail()
+# head(dat_wide)
+# dat_wide %>% dplyr::select(-orig) %>% tail()
 
 ## create a version of only events with appropriate y (weight) values for plotting labels:
 dat_wide_eventonly <- dat_wide %>%
@@ -106,18 +104,18 @@ dat_wide_eventonly <- dat_wide %>%
                         caliper_bein_li, caliper_bein_re), na.rm = TRUE)) %>%
   dplyr::filter(event != "")
   
-
-names(dat_wide)
-tail(dat_wide)
+# names(dat_wide)
+# tail(dat_wide)
 
 dat_long <- get_data_long(dat_txt) %>% tibble::as_tibble()
 
 dat_long_num <- dat_wide %>%
   dplyr::select(-note, -event, -orig, -bodyfat_value_txt) %>%
   reshape2::melt(id.vars = c("datetime", "xyear", "datetime_rel"))
-head(dat_long_num)
-tail(dat_long_num)
-str(dat_long_num)
+
+# head(dat_long_num)
+# tail(dat_long_num)
+# str(dat_long_num)
 
 ## ------------------------------------------------------------------------- ##
 ## function to add events to different plots ####
@@ -275,15 +273,14 @@ ggsave(file.path(path$out, "healthplot-bodyfat--12p2.jpg"),
 ## descriptive stats
 ## ------------------------------------------------------------------------- ##
 
-tail(dat_wide$orig, n = 40)
-dat_wide %>% dplyr::select(bodyfat) %>% na.omit() %>% tail(n = 10)
+#tail(dat_wide$orig, n = 40)
+#dat_wide %>% dplyr::select(bodyfat) %>% na.omit() %>% tail(n = 10)
 
-
-tail(dat_long_14)
+#tail(dat_long_14)
 
 #caliper_keys <- stringr::str_subset(dat_long_14$key, "caliper")
 
-str(dat_long_num_14)
+#str(dat_long_num_14)
 
 ## ------------------------------------------------------------------------- ##
 ## plot caliper values
@@ -294,8 +291,6 @@ str(dat_long_num_14)
 #   ggplot(aes(x = datetime, y = value, color = variable, group = variable)) +
 #   geom_line() +
 #   geom_smooth()
-
-dat_long_num_14
 
 dat_caliper <- dat_long_num_14 %>% na.omit() %>%
   dplyr::filter(!variable %in% c("weight", "bodyfat", "bodyfat_caliper")) %>%
