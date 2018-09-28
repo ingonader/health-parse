@@ -5,6 +5,8 @@
 ## Author Ingo Nader
 ## ############################################################################
 
+# rstudioapi::restartSession()
+
 ## [[to do]]
 ## * Make shiny app and host it on shiny.io (+ grab file from dropbox via R?) or on azure?
 ## * use age at the time of the event for calculation of body fat
@@ -164,7 +166,7 @@ add_events <- function(plot, eventdata, ypos, xpos = "rel") {
 p <- ggplot(dat_wide, aes(x = datetime_rel, y = weight)) +
   geom_point(alpha = .6) +
   geom_smooth(span = .3) +
-  facet_wrap(~ xyear, ncol = 3) +
+  facet_wrap(~ xyear, ncol = 2) +
   scale_x_date(
     labels = date_format("%b"),
     date_breaks = "2 month") +
@@ -175,7 +177,7 @@ p %<>% add_events(dat_wide_eventonly, ypos = "weight_min", xpos = "rel")
 p
 
 ## save plot to dropbox (in dropbox directory):
-ggsave(file.path(path$out, "weight-all.jpg"), 
+ggsave(file.path(path$out, "healthplot-weight-all.jpg"), 
        width = 5, height = 10, unit = "in", dpi = 300)
 
 
@@ -192,7 +194,7 @@ ggsave(file.path(path$out, "weight-all.jpg"),
 p <- ggplot(dat_wide, aes(x = datetime_rel, y = bodyfat)) +
   geom_point(alpha = .6) +
   geom_smooth(span = .3) +
-  facet_wrap(~ xyear, ncol = 3) +
+  facet_wrap(~ xyear, ncol = 2) +
   scale_x_date(
     labels = date_format("%b"),
     date_breaks = "2 month") +
@@ -202,13 +204,19 @@ p <- ggplot(dat_wide, aes(x = datetime_rel, y = bodyfat)) +
 p %<>% add_events(dat_wide_eventonly, ypos ="bodyfat_min", xpos = "rel")
 p
 
-dat_wide %>% dplyr::select(datetime, weight, bodyfat) %>% tail(n = 20)
+## save plot to dropbox (in dropbox directory):
+ggsave(file.path(path$out, "healthplot-bodyfat-all.jpg"), 
+       width = 5, height = 10, unit = "in", dpi = 300)
 
 ## ========================================================================= ##
 ## plot subsets of data
 ## ========================================================================= ##
 
-## Plot for 12 + 2 months
+dat_wide %>% dplyr::select(datetime, weight, bodyfat) %>% tail(n = 20)
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## Plot for 12 + 2 months ####
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
 ## subset data:
 mindate <- max(dat_wide$datetime, na.rm = TRUE) %m-% months(14)
@@ -222,8 +230,10 @@ dat_long_14 <- dat_long %>%
 dat_long_num_14 <- dat_long_num %>%
   dplyr::filter(datetime >= mindate)
 
+## ------------------------------------------------------------------------- ##
+## plot weight
+## ------------------------------------------------------------------------- ##
 
-## plot:
 p <- ggplot(dat_wide_14, aes(x = datetime, y = weight)) +
   geom_point(alpha = .6) +
   geom_smooth(span = .3) +
@@ -236,7 +246,14 @@ p <- ggplot(dat_wide_14, aes(x = datetime, y = weight)) +
 p %<>% add_events(dat_wide_eventonly_14, ypos = "weight_min", xpos = "abs")
 p
 
-## plot:
+## save plot to dropbox (in dropbox directory):
+ggsave(file.path(path$out, "healthplot-weight-12p2.jpg"), 
+       width = 10, height = 5, unit = "in", dpi = 300)
+
+## ------------------------------------------------------------------------- ##
+## plot bodyfat
+## ------------------------------------------------------------------------- ##
+
 p <- ggplot(dat_wide_14, aes(x = datetime, y = bodyfat)) +
   geom_point(alpha = .6) +
   geom_smooth(span = .3) +
@@ -249,6 +266,15 @@ p <- ggplot(dat_wide_14, aes(x = datetime, y = bodyfat)) +
 p %<>% add_events(dat_wide_eventonly_14, ypos = "bodyfat_min", xpos = "abs")
 p
 
+## save plot to dropbox (in dropbox directory):
+ggsave(file.path(path$out, "healthplot-bodyfat--12p2.jpg"), 
+       width = 10, height = 5, unit = "in", dpi = 300)
+
+
+## ------------------------------------------------------------------------- ##
+## descriptive stats
+## ------------------------------------------------------------------------- ##
+
 tail(dat_wide$orig, n = 40)
 dat_wide %>% dplyr::select(bodyfat) %>% na.omit() %>% tail(n = 10)
 
@@ -259,12 +285,15 @@ tail(dat_long_14)
 
 str(dat_long_num_14)
 
-## plot caliper values:
-dat_long_num_14 %>% na.omit() %>%
-  dplyr::filter(!variable %in% c("weight", "bodyfat", "bodyfat_caliper")) %>%
-  ggplot(aes(x = datetime, y = value, color = variable, group = variable)) +
-  geom_line() +
-  geom_smooth()
+## ------------------------------------------------------------------------- ##
+## plot caliper values
+## ------------------------------------------------------------------------- ##
+
+# dat_long_num_14 %>% na.omit() %>%
+#   dplyr::filter(!variable %in% c("weight", "bodyfat", "bodyfat_caliper")) %>%
+#   ggplot(aes(x = datetime, y = value, color = variable, group = variable)) +
+#   geom_line() +
+#   geom_smooth()
 
 dat_long_num_14
 
@@ -275,14 +304,25 @@ dat_caliper <- dat_long_num_14 %>% na.omit() %>%
   position = stringr::str_split_fixed(variable, "_", n = 3)[, 2]
 )
 
+## add columns in plot to event data (otherwise, add_events() function will fail):
+dat_wide_eventonly_14["position"] <- NA
+dat_wide_eventonly_14["side"] <- NA
+
 ## plot caliper values:
+
 p <- dat_caliper %>%
   ggplot(aes(x = datetime, y = value, color = position, linetype = side)) +
   geom_line() +
-  geom_smooth(alpha = .1, size = 2)
-#p %<>% add_events(dat_long_14, ypos = "weight_min", xpos = "abs")
+  geom_smooth(alpha = .1, size = 1.0) +
+  scale_x_date(
+    labels = date_format("%b-%Y"),
+    date_breaks = "2 month")
+p %<>% add_events(dat_wide_eventonly_14, ypos = "caliper_min", xpos = "abs")
 p
 
+## save plot to dropbox (in dropbox directory):
+ggsave(file.path(path$out, "healthplot-bodyfat-caliper-12p2.jpg"), 
+       width = 10, height = 5, unit = "in", dpi = 300)
 
 
 
