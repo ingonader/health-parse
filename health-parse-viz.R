@@ -269,6 +269,51 @@ ggsave(file.path(path$out, "healthplot-bodyfat--12p2.jpg"),
        width = 10, height = 5, unit = "in", dpi = 300)
 
 
+## ========================================================================= ##
+## plot multiple subsets of data
+## ========================================================================= ##
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## Plot for 12 x 3 months ####
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## [[here]]
+
+## subset data:
+mindate <- max(dat_wide$datetime, na.rm = TRUE) %m-% months(12 * 3)
+dat_wide_36 <- dat_wide %>%
+  dplyr::filter(datetime >= mindate)
+
+dat_wide_36
+
+## add datetime offset:
+dat_wide_36 <- dat_wide_36 %>% dplyr::mutate(
+  datetime_offset = as.period(max(datetime) - datetime) %/% months(12)
+)
+
+## create label field:
+dat_tmp_labels <- dat_wide_36 %>% 
+  dplyr::group_by(datetime_offset) %>% 
+  dplyr::summarize(
+    xyear_min = min(xyear),
+    xyear_max = max(xyear)
+  ) %>%
+  dplyr::mutate(
+    datetime_label = paste0(xyear_min, " - ", xyear_max)
+  )
+
+## add label field to wide dataset:
+dat_wide_36 <- dat_wide_36 %>%
+  dplyr::left_join(dat_tmp_labels,
+                   by = "datetime_offset")
+
+## inspect:
+dat_wide_36[c("datetime_offset", "xyear")] %>% table()
+
+
+
+
+
 
 ## ========================================================================= ##
 ## various stuff
