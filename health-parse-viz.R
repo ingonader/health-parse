@@ -310,8 +310,23 @@ dat_wide_36 <- dat_wide_36 %>%
 ## inspect:
 dat_wide_36[c("datetime_offset", "xyear")] %>% table()
 
+## ------------------------------------------------------------------------- ##
+## plot weight
+## ------------------------------------------------------------------------- ##
 
-
+p <- ggplot(dat_wide_36, aes(x = datetime_rel, 
+                             y = weight, 
+                             group = datetime_label,
+                             color = datetime_label)) +
+  geom_point(alpha = .6) +
+  geom_smooth(span = .3) +
+  scale_x_date(
+    labels = date_format("%b"),
+    date_breaks = "2 month") +
+  coord_cartesian(
+    ylim = range(dat_wide$weight, na.rm = TRUE) + c(-1, +1)
+  )
+print(p)
 
 
 
