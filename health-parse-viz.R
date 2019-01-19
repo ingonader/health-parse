@@ -274,10 +274,8 @@ ggsave(file.path(path$out, "healthplot-bodyfat--12p2.jpg"),
 ## ========================================================================= ##
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
-## Plot for 12 x 3 months ####
+## Plot for 12 x 3 months, relative ####
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
-
-## [[here]]
 
 ## subset data:
 mindate <- max(dat_wide$datetime, na.rm = TRUE) %m-% months(12 * 3)
@@ -346,6 +344,42 @@ print(p)
 ggsave(file.path(path$out, "healthplot-weight-3x1y-rel.jpg"), 
        width = 10, height = 5, unit = "in", dpi = 300)
 
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## Plot for 12 x 3 months, absolute ####
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## subset data:
+dat_wide_36_abs <- dat_wide %>%
+  dplyr::filter(xyear >= max(xyear) - 2)
+
+dat_wide_36_abs <- dplyr::mutate(dat_wide_36_abs,
+                          xyear = as.factor(xyear))
+dat_wide_36_abs
+#dat_wide_36_abs %>% dplyr::select(datetime, weight, xyear, datetime_rel, datetime_offset, datetime_offset_2, datetime_label) %>% View()
+
+p <- ggplot(dat_wide_36_abs, aes(x = datetime_rel, 
+                             y = weight, 
+                             group = xyear,
+                             color = xyear)) +
+  geom_point(alpha = .6) +
+  geom_smooth(aes(alpha = xyear), span = .3) +
+  scale_x_date(
+    labels = date_format("%b"),
+    date_breaks = "2 month") +
+  coord_cartesian(
+    ylim = range(dat_wide$weight, na.rm = TRUE) + c(-1, +1)) +
+  scale_colour_manual(name = "Years", 
+                      values = c("#ff9999", 
+                                 "#ff7777", 
+                                 "#ff0000")) +
+  scale_alpha_discrete(name = "Years",
+                       range = c(.2, .4))
+print(p)
+
+## save plot to dropbox (in dropbox directory):
+ggsave(file.path(path$out, "healthplot-weight-3x1y-abs.jpg"), 
+       width = 10, height = 5, unit = "in", dpi = 300)
 
 ## ========================================================================= ##
 ## various stuff
