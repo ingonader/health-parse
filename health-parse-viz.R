@@ -285,10 +285,19 @@ dat_wide_36 <- dat_wide %>%
   dplyr::filter(datetime >= mindate)
 
 dat_wide_36
+#dat_wide_36 %>% dplyr::select(datetime, weight, xyear, datetime_rel, datetime_offset, datetime_offset_2, datetime_label) %>% View()
+
+maxdate <- max(dat_wide_36$datetime)
+maxreldate <- dat_wide_36 %>% dplyr::filter(datetime == maxdate) %>% dplyr::pull(datetime_rel) %>% .[1]
 
 ## add datetime offset:
 dat_wide_36 <- dat_wide_36 %>% dplyr::mutate(
-  datetime_offset = as.period(max(datetime) - datetime) %/% months(12)
+  datetime_offset = (as.period(max(datetime)  - datetime)) %/% months(12),
+  datetime_offset_2 = (max(xyear) - xyear) -
+    ifelse(datetime_rel > maxreldate, 1, 0),
+  datetime_rel_to_offset = datetime_rel %m-% months(
+    ifelse(datetime_rel > maxreldate, 12, 0)
+  )
 )
 
 ## create label field:
@@ -314,7 +323,7 @@ dat_wide_36[c("datetime_offset", "xyear")] %>% table()
 ## plot weight
 ## ------------------------------------------------------------------------- ##
 
-p <- ggplot(dat_wide_36, aes(x = datetime_rel, 
+p <- ggplot(dat_wide_36, aes(x = datetime_rel_to_offset, 
                              y = weight, 
                              group = datetime_label,
                              color = datetime_label)) +
