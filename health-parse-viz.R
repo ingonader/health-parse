@@ -342,6 +342,9 @@ p <- ggplot(dat_wide_36, aes(x = datetime_rel_to_offset,
                        range = c(.2, .4))
 print(p)
 
+## save plot to dropbox (in dropbox directory):
+ggsave(file.path(path$out, "healthplot-weight-3x1y-rel.jpg"), 
+       width = 10, height = 5, unit = "in", dpi = 300)
 
 
 ## ========================================================================= ##
