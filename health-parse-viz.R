@@ -328,13 +328,18 @@ p <- ggplot(dat_wide_36, aes(x = datetime_rel_to_offset,
                              group = datetime_label,
                              color = datetime_label)) +
   geom_point(alpha = .6) +
-  geom_smooth(span = .3) +
+  geom_smooth(aes(alpha = datetime_label), span = .3) +
   scale_x_date(
     labels = date_format("%b"),
     date_breaks = "2 month") +
   coord_cartesian(
-    ylim = range(dat_wide$weight, na.rm = TRUE) + c(-1, +1)
-  )
+    ylim = range(dat_wide$weight, na.rm = TRUE) + c(-1, +1)) +
+  scale_colour_manual(name = "Years", 
+                      values = c("#ff9999", 
+                                 "#ff7777", 
+                                 "#ff0000")) +
+  scale_alpha_discrete(name = "Years",
+                       range = c(.2, .4))
 print(p)
 
 
