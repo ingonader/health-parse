@@ -358,12 +358,24 @@ dat_wide_36_abs <- dplyr::mutate(dat_wide_36_abs,
 dat_wide_36_abs
 #dat_wide_36_abs %>% dplyr::select(datetime, weight, xyear, datetime_rel, datetime_offset, datetime_offset_2, datetime_label) %>% View()
 
+## create a separate dataset for the smoothed loess lines:
+## (same data, but remove years with not enough data):
+wch_year <- dat_wide_36_abs %>% 
+  dplyr::filter(!is.na(weight)) %>%
+  dplyr::group_by(xyear) %>% 
+  dplyr::summarize(cnt = length(xyear)) %>%
+  dplyr::filter(cnt > 5) %>% 
+  dplyr::pull(xyear)
+dat_wide_36_abs_smooth  <- dat_wide_36_abs %>%
+  dplyr::filter(xyear %in% wch_year)
+
 p <- ggplot(dat_wide_36_abs, aes(x = datetime_rel, 
                              y = weight, 
                              group = xyear,
                              color = xyear)) +
   geom_point(alpha = .6) +
-  geom_smooth(aes(alpha = xyear), span = .3) +
+  geom_smooth(data = dat_wide_36_abs_smooth,
+              aes(alpha = xyear), span = .3) +
   scale_x_date(
     labels = date_format("%b"),
     date_breaks = "2 month") +
