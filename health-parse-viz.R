@@ -436,7 +436,7 @@ dat_wide_eventonly_14["side"] <- NA
 p <- dat_caliper %>%
   ggplot(aes(x = datetime, y = value, color = position, linetype = side)) +
   geom_line() +
-  geom_smooth(alpha = .1, size = 1.0) +
+  geom_smooth(alpha = .2, size = 1.0, span = .5) +
   scale_x_date(
     labels = date_format("%b-%Y"),
     date_breaks = "2 month")
