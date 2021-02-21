@@ -232,12 +232,19 @@ dat_long_num_14 <- dat_long_num %>%
 ## plot weight
 ## ------------------------------------------------------------------------- ##
 
+y_min <- floor(min(dat_wide_14$weight, na.rm = TRUE))
+y_max <- ceiling(max(dat_wide_14$weight, na.rm = TRUE))
+
 p <- ggplot(dat_wide_14, aes(x = datetime, y = weight)) +
   geom_point(alpha = .6) +
   geom_smooth(span = .3) +
   scale_x_date(
     labels = date_format("%b-%Y"),
     date_breaks = "2 month") +
+  # scale_y_continuous(
+  #   breaks = seq(from = y_min, to = y_max, by = 6),
+  #   minor_breaks = seq(from = y_min, to = y_max, by = 2)
+  # ) +
   coord_cartesian(
     ylim = range(dat_wide$weight, na.rm = TRUE) + c(-1, +1)
   )
@@ -278,15 +285,20 @@ ggsave(file.path(path$out, "healthplot-bodyfat--12p2.jpg"),
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
 ## subset data:
-mindate <- max(dat_wide$datetime, na.rm = TRUE) %m-% months(12 * 3)
+mindate <- max(dat_wide$datetime, na.rm = TRUE) %m-% months(12*3) %m+% months(6)
 dat_wide_36 <- dat_wide %>%
   dplyr::filter(datetime >= mindate)
 
 dat_wide_36
+dat_wide_36 %>% .[["datetime"]] %>% range()
 #dat_wide_36 %>% dplyr::select(datetime, weight, xyear, datetime_rel, datetime_offset, datetime_offset_2, datetime_label) %>% View()
 
+## get maximum (relative) date in selected data:
 maxdate <- max(dat_wide_36$datetime)
 maxreldate <- dat_wide_36 %>% dplyr::filter(datetime == maxdate) %>% dplyr::pull(datetime_rel) %>% .[1]
+
+maxdate <- maxdate %m+% months(6)
+maxreldate <- maxreldate %m+% months(6)
 
 ## add datetime offset:
 dat_wide_36 <- dat_wide_36 %>% dplyr::mutate(
@@ -321,30 +333,30 @@ dat_wide_36[c("datetime_offset", "xyear")] %>% table()
 ## plot weight
 ## ------------------------------------------------------------------------- ##
 
-p <- ggplot(dat_wide_36, aes(x = datetime_rel_to_offset, 
-                             y = weight, 
-                             group = datetime_label,
-                             color = datetime_label)) +
-  geom_point(alpha = .6) +
-  geom_smooth(aes(alpha = datetime_label), span = .3) +
-  scale_x_date(
-    labels = date_format("%b"),
-    date_breaks = "2 month") +
-  coord_cartesian(
-    ylim = range(dat_wide$weight, na.rm = TRUE) + c(-1, +1)) +
-  scale_colour_manual(name = "Years", 
-                      values = c("#ff9999", 
-                                 "#ff7777", 
-                                 "#ff0000")) +
-  scale_alpha_discrete(name = "Years",
-                       range = c(.2, .4))
-print(p)
-
-## save plot to dropbox (in dropbox directory):
-ggsave(file.path(path$out, "healthplot-weight-3x1y-rel.jpg"), 
-       width = 10, height = 5, unit = "in", dpi = 300)
-
-
+# p <- ggplot(dat_wide_36, aes(x = datetime_rel_to_offset, 
+#                              y = weight, 
+#                              group = datetime_label,
+#                              color = datetime_label)) +
+#   geom_point(alpha = .6) +
+#   geom_smooth(aes(alpha = datetime_label), span = .3) +
+#   scale_x_date(
+#     labels = date_format("%b"),
+#     date_breaks = "2 month") +
+#   coord_cartesian(
+#     ylim = range(dat_wide$weight, na.rm = TRUE) + c(-1, +1)) +
+#   scale_colour_manual(name = "Years", 
+#                       values = c("#ff9999", 
+#                                  "#ff7777", 
+#                                  "#ff0000")) +
+#   scale_alpha_discrete(name = "Years",
+#                        range = c(.2, .4))
+# print(p)
+# 
+# ## save plot to dropbox (in dropbox directory):
+# ggsave(file.path(path$out, "healthplot-weight-3x1y-rel.jpg"), 
+#        width = 10, height = 5, unit = "in", dpi = 300)
+# 
+# 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## Plot for 12 x 3 months, absolute ####
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
